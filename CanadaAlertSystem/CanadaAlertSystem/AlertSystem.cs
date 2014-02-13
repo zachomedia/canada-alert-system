@@ -5,7 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
@@ -24,6 +29,9 @@ namespace ZacharySeguin.CanadaAlertSystem
         #region Properties
 
         public List<Alert> Alerts { get; protected set; }
+        public TcpClient StreamingClient { get; protected set; }
+
+        private BackgroundWorker StreamingListener { get; set; }
 
         #endregion Properties
 
@@ -81,6 +89,117 @@ namespace ZacharySeguin.CanadaAlertSystem
                 return false;
             }// End of catch
         }// End of LoadFromXml method
+
+        /// <summary>
+        /// Connects to a TCP Stream for receiving alerts.
+        /// </summary>
+        /// <param name="hostname">Hostname of the streaming server.</param>
+        /// <param name="port">Port of the streaming server.</param>
+        /// <returns></returns>
+        public bool ConnectToStream(string hostname, int port)
+        {
+            if (this.StreamingClient != null)
+                this.CloseStream();
+
+            try
+            {
+                // Connect to Tcp Stream
+                this.StreamingClient = new TcpClient(hostname, port);
+
+                this.StreamingListener = new BackgroundWorker();
+                this.StreamingListener.WorkerSupportsCancellation = true;
+                this.StreamingListener.WorkerReportsProgress = true;
+
+                this.StreamingListener.DoWork += this.StreamingListener_DoWork;
+                this.StreamingListener.ProgressChanged += this.StreamingListener_ProgressChanged;
+
+                this.StreamingListener.RunWorkerAsync();
+
+                return true;
+            }// End of try
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                return false;
+            }// End of catch
+        }// End of ConnectToStream method
+
+        private void StreamingListener_DoWork(object sender, DoWorkEventArgs args)
+        {
+            StreamReader reader = null;
+            string alert = String.Empty;
+
+            while (this.StreamingClient.Connected && !this.StreamingListener.CancellationPending)
+            {
+                try
+                {
+                    if (reader == null)
+                        reader = new StreamReader(this.StreamingClient.GetStream());
+
+                    char character = (char)reader.Read();
+                    alert += character;
+
+                    // If the alert contains </alert>
+                    // then the full alert has been loaded
+                    if (alert.Contains("</alert>"))
+                    {
+                        try
+                        {
+                            XDocument xDoc = XDocument.Parse(alert);
+                            ((BackgroundWorker)sender).ReportProgress(0, xDoc);
+                        }// End of try
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine(e.Message);
+                        }// End of catch
+                        finally
+                        {
+                            alert = String.Empty;
+                        }// End of finally
+                    }// End of if
+                }// End of try
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }// End of catch
+            }// End of while
+
+            Debug.WriteLine("Reading loop complete - Socket Closed");
+        }// End of StreamingListener_DoWork method
+
+        private void StreamingListener_ProgressChanged(object sender, ProgressChangedEventArgs args)
+        {
+            XDocument xDoc = (XDocument)args.UserState;
+            if (!this.LoadFromXmlDocument(xDoc))
+                Debug.WriteLine("Failed to load alert.");
+        }// End of StreamingListener_ProgressChangedEventArgs method
+
+        /// <summary>
+        /// Closes the stream.
+        /// </summary>
+        /// <returns></returns>
+        public bool CloseStream()
+        {
+            try
+            {
+                if (this.StreamingClient != null)
+                    this.StreamingClient.Close();
+
+                this.StreamingClient = null;
+
+                if (this.StreamingListener != null && this.StreamingListener.IsBusy)
+                    this.StreamingListener.CancelAsync();
+
+                this.StreamingListener = null;
+
+                return true;
+            }// End of try
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                return false;
+            }// End of catch
+        }// End of CloseStream methods
 
         #endregion Methods
     }// End of class
