@@ -44,7 +44,7 @@
     <Compile Include="AlertInfo.cs" />
     <Compile Include="AlertEventArgs.cs" />
     <Compile Include="AlertResource.cs" />
-    <Compile Include="CanadaAlertSystem.cs" />
+    <Compile Include="AlertSystem.cs" />
     <Compile Include="Enumerations\AlertCategory.cs" />
     <Compile Include="Enumerations\AlertCertainty.cs" />
     <Compile Include="Enumerations\AlertResponseType.cs" />
