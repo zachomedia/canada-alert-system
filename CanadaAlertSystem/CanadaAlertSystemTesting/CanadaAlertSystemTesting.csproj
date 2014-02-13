@@ -48,7 +48,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CanadaAlertingSystem\CanadaAlertSystem.csproj">
+    <ProjectReference Include="..\CanadaAlertSystem\CanadaAlertSystem.csproj">
       <Project>{4deaf4f7-e5a1-4b2b-bc37-38d3ab367340}</Project>
       <Name>CanadaAlertSystem</Name>
     </ProjectReference>
