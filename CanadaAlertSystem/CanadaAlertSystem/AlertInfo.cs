@@ -283,6 +283,22 @@ namespace ZacharySeguin.CanadaAlertSystem
                 foreach (XElement el in elsTemp)
                     info.Parameters.Add(el.Value);
 
+                elsTemp = xElement.Elements(ns + "resource");
+                foreach (XElement el in elsTemp)
+                {
+                    AlertResource resource;
+                    if (AlertResource.FromXmlElement(el, out resource))
+                        info.Resources.Add(resource);
+                }// End of foreach
+
+                elsTemp = xElement.Elements(ns + "area");
+                foreach (XElement el in elsTemp)
+                {
+                    AlertArea area;
+                    if (AlertArea.FromXmlElement(el, out area))
+                        info.Areas.Add(area);
+                }// End of foreach
+
                 outInfo = info;
                 return true;
             }// End of try

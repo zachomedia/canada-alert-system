@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
@@ -61,5 +62,60 @@ namespace ZacharySeguin.CanadaAlertSystem
             this.DerefUri = null;
             this.Digest = String.Empty;
         }// End of Init method
+
+        /// <summary>
+        /// Load from XML document.
+        /// </summary>
+        /// <param name="xDoc"></param>
+        /// <returns>Whether or not loading from XML was successful.</returns>
+        public static bool FromXmlElement(XElement xElement, out AlertResource outResource)
+        {
+            try
+            {
+                // Declare variable
+                XNamespace ns = xElement.Name.Namespace;
+
+                XElement elTemp;
+
+                // Initialize info object
+                AlertResource resource = new AlertResource();
+
+                elTemp = xElement.Element(ns + "resourceDesc");
+                if (elTemp != null)
+                    resource.Description = elTemp.Value;
+
+                elTemp = xElement.Element(ns + "mimeType");
+                if (elTemp != null)
+                    resource.MimeType = elTemp.Value;
+
+                elTemp = xElement.Element(ns + "uri");
+                if (elTemp != null)
+                {
+                    Uri uri;
+                    if (Uri.TryCreate(elTemp.Value, UriKind.RelativeOrAbsolute, out uri))
+                        resource.Uri = uri;
+                }// End of if
+
+                elTemp = xElement.Element(ns + "derefUri");
+                if (elTemp != null)
+                {
+                    Uri uri;
+                    if (Uri.TryCreate(elTemp.Value, UriKind.RelativeOrAbsolute, out uri))
+                        resource.DerefUri = uri;
+                }// End of if
+
+                elTemp = xElement.Element(ns + "digest");
+                if (elTemp != null)
+                    resource.Digest = elTemp.Value;
+                
+                outResource = resource;
+                return true;
+            }// End of try
+            catch (Exception)
+            {
+                outResource = null;
+                return false;
+            }// End of catch
+        }// End of FromXmlElement method
     }// End of class
 }// End of namespace
