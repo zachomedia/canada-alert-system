@@ -85,7 +85,7 @@ namespace ZacharySeguin.CanadaAlertSystem
                 if (elTemp != null)
                     area.Description = elTemp.Value;
 
-                elsTemp = xElement.Elements(ns + "polgygon");
+                elsTemp = xElement.Elements(ns + "polygon");
                 foreach (XElement el in elsTemp)
                     area.Polygons.Add(el.Value);
 
