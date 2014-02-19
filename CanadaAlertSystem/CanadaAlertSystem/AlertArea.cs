@@ -10,37 +10,38 @@ namespace ZacharySeguin.CanadaAlertSystem
     /// <summary>
     /// NAAD Alert Area
     /// </summary>
+    [Serializable()]
     public class AlertArea
     {
         /// <summary>
         /// Gets the Description.
         /// </summary>
-        public string Description { protected set; get; }
+        public string Description { set; get; }
 
         /// <summary>
         /// Gets the Polygons.
         /// </summary>
-        public List<string> Polygons { protected set; get; }
+        public List<string> Polygons { set; get; }
 
         /// <summary>
         /// Gets the Circles.
         /// </summary>
-        public List<string> Circles { protected set; get; }
+        public List<string> Circles { set; get; }
 
         /// <summary>
         /// Gets the Geocodes.
         /// </summary>
-        public List<string> Geocodes { protected set; get; }
+        public List<string> Geocodes { set; get; }
 
         /// <summary>
         /// Gets the altitude.
         /// </summary>
-        public double Altitude { protected set; get; }
+        public double Altitude { set; get; }
 
         /// <summary>
         /// Gets the ceiling.
         /// </summary>
-        public double Ceiling { protected set; get; }
+        public double Ceiling { set; get; }
 
         /// <summary>
         /// Constructs a default Alert Area.

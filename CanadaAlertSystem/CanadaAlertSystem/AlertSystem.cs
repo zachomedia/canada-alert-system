@@ -14,7 +14,9 @@ using System.ComponentModel;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
-    public delegate void AlertReceived(object sender, AlertEventArgs a);
+    public delegate void AlertReceived(object sender, AlertEventArgs e);
+    public delegate void AlertUpdated(object sender, AlertUpdatedEventArgs e);
+    public delegate void AlertEnded(object sender, AlertEventArgs e);
 
     public class AlertSystem
     {
@@ -25,20 +27,46 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// </summary>
         public EventHandler<AlertEventArgs> AlertReceived;
 
+        /// <summary>
+        /// An alert was updated.
+        /// </summary>
+        public EventHandler<AlertUpdatedEventArgs> AlertUpdated;
+
+        /// <summary>
+        /// An alert has ended (expired/cancelled/etc).
+        /// </summary>
+        public EventHandler<AlertEventArgs> AlertEnded;
+
         #endregion Events
         #region Properties
 
+        /// <summary>
+        /// Gets a list of active alerts.
+        /// </summary>
         public List<Alert> Alerts { get; protected set; }
-        public TcpClient StreamingClient { get; protected set; }
 
+        /// <summary>
+        /// The TcpClient used for streaming.
+        /// </summary>
+        public TcpClient StreamingClient { get; set; }
+
+        /// <summary>
+        /// Background worker used to monitor a TcpStream.
+        /// </summary>
         private BackgroundWorker StreamingListener { get; set; }
 
         #endregion Properties
 
         #region Constructors
+
+        /// <summary>
+        /// Constructs a new AlertSystem object.
+        /// </summary>
         public AlertSystem()
         {
             this.Alerts = new List<Alert>();
+            this.StreamingClient = null;
+            this.StreamingListener = null;
         }// End of constructor method
 
         #endregion Constructors
@@ -51,6 +79,30 @@ namespace ZacharySeguin.CanadaAlertSystem
         protected void OnAlertReceived(AlertEventArgs args)
         {
             EventHandler<AlertEventArgs> handler = this.AlertReceived;
+
+            if (handler != null)
+                handler(this, args);
+        }// End of OnAlertReceived method
+
+        /// <summary>
+        /// Call the event handler informing that an alert has been updated.
+        /// </summary>
+        /// <param name="args"></param>
+        protected void OnAlertUpdated(AlertUpdatedEventArgs args)
+        {
+            EventHandler<AlertUpdatedEventArgs> handler = this.AlertUpdated;
+
+            if (handler != null)
+                handler(this, args);
+        }// End of OnAlertReceived method
+
+        /// <summary>
+        /// Call the event handler informing that an alert has ended.
+        /// </summary>
+        /// <param name="args"></param>
+        protected void OnAlertEnded(AlertEventArgs args)
+        {
+            EventHandler<AlertEventArgs> handler = this.AlertEnded;
 
             if (handler != null)
                 handler(this, args);
@@ -71,7 +123,7 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// </summary>
         /// <param name="xDoc">Document to load</param>
         /// <returns>true if succesfully read, false otherwise.</returns>
-        public bool LoadFromXmlDocument(XDocument xDoc)
+        public bool LoadFromXDocument(XDocument xDoc)
         {
             try
             {
@@ -85,10 +137,40 @@ namespace ZacharySeguin.CanadaAlertSystem
             }// End of try
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.StackTrace);
+
                 return false;
             }// End of catch
-        }// End of LoadFromXml method
+        }// End of LoadFromXDocument method
+
+        /// <summary>
+        /// Loads from an XmlSerialization file of an Alert object.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public bool LoadFromXmlSerializationFile(string filename)
+        {
+            try
+            {
+                Alert alert = Alert.FromXmlFile(filename);
+
+                if (alert != null)
+                {
+                    this.AddAlert(alert);
+                    return true;
+                }// End of if
+
+                return false;
+            }// End of try
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.StackTrace);
+
+                return false;
+            }// End of catch
+        }// End of LoadFromXmlSerializationFile method
 
         /// <summary>
         /// Connects to a TCP Stream for receiving alerts.
@@ -170,7 +252,7 @@ namespace ZacharySeguin.CanadaAlertSystem
         private void StreamingListener_ProgressChanged(object sender, ProgressChangedEventArgs args)
         {
             XDocument xDoc = (XDocument)args.UserState;
-            if (!this.LoadFromXmlDocument(xDoc))
+            if (!this.LoadFromXDocument(xDoc))
                 Debug.WriteLine("Failed to load alert.");
         }// End of StreamingListener_ProgressChangedEventArgs method
 

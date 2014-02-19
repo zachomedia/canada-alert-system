@@ -4,118 +4,135 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
     /// <summary>
     /// NAAD Alert Info
     /// </summary>
+    [Serializable()]
     public class AlertInfo
     {
         /// <summary>
         /// Gets the language.
         /// </summary>
-        public string Language { protected set; get; }
+        public string Language { set; get; }
 
         /// <summary>
         /// Gets the Alert Categories.
         /// </summary>
-        public List<AlertCategory> Categories { protected set; get; }
+        public List<AlertCategory> Categories { set; get; }
 
         /// <summary>
         /// Gets the event.
         /// </summary>
-        public string Event { protected set; get; }
+        public string Event { set; get; }
 
         /// <summary>
         /// Gets the Response Types.
         /// </summary>
-        public List<AlertResponseType> ResponseTypes { protected set; get; }
+        public List<AlertResponseType> ResponseTypes { set; get; }
 
         /// <summary>
         /// Gets the AlertUrgency.
         /// </summary>
-        public AlertUrgency Urgency { protected set; get; }
+        public AlertUrgency Urgency { set; get; }
 
         /// <summary>
         /// Gets the AlertSeverity.
         /// </summary>
-        public AlertSeverity Severity { protected set; get; }
+        public AlertSeverity Severity { set; get; }
 
         /// <summary>
         /// Gets the AlertCertainty.
         /// </summary>
-        public AlertCertainty Certainty { protected set; get; }
+        public AlertCertainty Certainty { set; get; }
 
         /// <summary>
         /// Gets the audience.
         /// </summary>
-        public string Audience { protected set; get; }
+        public string Audience { set; get; }
 
         /// <summary>
         /// Gets the event codes.
         /// </summary>
-        public List<string> EventCodes { protected set; get; }
+        public List<string> EventCodes { set; get; }
 
         /// <summary>
         /// Gets the effective date/time.
         /// </summary>
-        public DateTime Effective { protected set; get; }
+        public DateTime Effective { set; get; }
 
         /// <summary>
         /// Gets the onset date/time.
         /// </summary>
-        public DateTime OnSet { protected set; get; }
+        public DateTime OnSet { set; get; }
 
         /// <summary>
         /// Gets the expiry date/time.
         /// </summary>
-        public DateTime Expires { protected set; get; }
+        public DateTime Expires { set; get; }
 
         /// <summary>
         /// Gets the sender name.
         /// </summary>
-        public string SenderName { protected set; get; }
+        public string SenderName { set; get; }
 
         /// <summary>
         /// Gets the headline.
         /// </summary>
-        public string Headline { protected set; get; }
+        public string Headline { set; get; }
 
         /// <summary>
         /// Gets the description.
         /// </summary>
-        public string Description { protected set; get; }
+        public string Description { set; get; }
 
         /// <summary>
         /// Gets the instruction.
         /// </summary>
-        public string Instruction { protected set; get; }
+        public string Instruction { set; get; }
 
         /// <summary>
         /// Gets the web URI.
         /// </summary>
-        public Uri Web { protected set; get; }
+        [XmlIgnore]
+        public Uri Web { set; get; }
+
+        [XmlElement("Web")]
+        public string _Web
+        {
+            set
+            {
+                this.Web = new Uri(value);
+            }// End of set
+
+            get
+            {
+                return this.Web.ToString();
+            }// End of get
+        }// End of _Web method
 
         /// <summary>
         /// Gets the contact.
         /// </summary>
-        public string Contact { protected set; get; }
+        public string Contact { set; get; }
 
         /// <summary>
         /// Gets the parameters.
         /// </summary>
-        public List<string> Parameters { protected set; get; }
+        public List<string> Parameters { set; get; }
 
         /// <summary>
         /// Gets the resources.
         /// </summary>
-        public List<AlertResource> Resources { protected set; get; }
+        public List<AlertResource> Resources { set; get; }
 
         /// <summary>
         /// Gets the areas.
         /// </summary>
-        public List<AlertArea> Areas { protected set; get; }
+        public List<AlertArea> Areas { set; get; }
 
         /// <summary>
         /// Constructs a default AlertInfo object.

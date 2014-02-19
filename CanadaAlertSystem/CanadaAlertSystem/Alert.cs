@@ -5,83 +5,87 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
     /// <summary>
     /// An alert issued by the National Alert Aggregation and Dissemation System.
     /// </summary>
+    [Serializable()]
     public class Alert
     {
         /// <summary>
         /// Gets the identifier.
         /// </summary>
-        public string Identifier { protected set; get; }
+        public string Identifier { set; get; }
 
         /// <summary>
         /// Gets the sender.
         /// </summary>
-        public string Sender { protected set; get; }
+        public string Sender { set; get; }
 
         /// <summary>
         /// Gets the DateTime the alert was sent.
         /// </summary>
-        public DateTime Sent { protected set; get; }
+        public DateTime Sent { set; get; }
 
         /// <summary>
         /// Gets the AlertStatus.
         /// </summary>
-        public AlertStatus Status { protected set; get; }
+        public AlertStatus Status { set; get; }
 
         /// <summary>
         /// Gets the AlertType.
         /// </summary>
-        public AlertType Type { protected set; get; }
+        public AlertType Type { set; get; }
 
         /// <summary>
         /// Gets the source.
         /// </summary>
-        public string Source { protected set; get; }
+        public string Source { set; get; }
 
         /// <summary>
         /// Gets the AlertScope.
         /// </summary>
-        public AlertScope Scope { protected set; get; }
+        public AlertScope Scope { set; get; }
 
         /// <summary>
         /// Gets the restrictions.
         /// </summary>
-        public string Restriction { protected set; get; }
+        public string Restriction { set; get; }
 
         /// <summary>
         /// Gets the addressess.
         /// </summary>
-        public string Addresses { protected set; get; }
+        public string Addresses { set; get; }
 
         /// <summary>
         /// Gets the codes.
         /// </summary>
-        public List<string> Codes { protected set; get; }
+        public List<string> Codes { set; get; }
 
         /// <summary>
         /// Gets the note.
         /// </summary>
-        public string Note { protected set; get; }
+        public string Note { set; get; }
 
         /// <summary>
         /// Gets the references.
         /// </summary>
-        public string References { protected set; get; }
+        public string References { set; get; }
 
         /// <summary>
         /// Gets the incidents.
         /// </summary>
-        public string Incidents { protected set; get; }
+        public string Incidents { set; get; }
 
         /// <summary>
         /// Gets the Alert Informations.
         /// </summary>
-        public List<AlertInfo> Information { protected set; get; }
+        public List<AlertInfo> Information { set; get; }
 
         /// <summary>
         /// Constructs a new Alert object.
@@ -219,5 +223,37 @@ namespace ZacharySeguin.CanadaAlertSystem
                 return false;
             }// End of catch
         }// End of FromXmlDocument method
+
+        /// <summary>
+        /// Writes the alert to xml.
+        /// </summary>
+        /// <param name="file"></param>
+        public void ToXmlFile(string file)
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Alert));
+
+            using (StreamWriter fileWriter = new StreamWriter(file))
+            {
+                xmlSerializer.Serialize(fileWriter, this);
+            }// End of using
+        }// End of ToXmlFile method
+
+        /// <summary>
+        /// Reconstructs alert object from XML.
+        /// </summary>
+        /// <param name="file"></param>
+        public static Alert FromXmlFile(string file)
+        {
+            Alert alert = null;
+
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Alert));
+
+            using (StreamReader fileReader = new StreamReader(file))
+            {
+                alert = (Alert)xmlSerializer.Deserialize(fileReader);
+            }// End of using
+
+            return alert;
+        }// End of ToXmlFile method
     }// End of class
 }// End of namespace

@@ -4,43 +4,80 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
     /// <summary>
     /// NAAD Alert Resource
     /// </summary>
+    [Serializable()]
     public class AlertResource
     {
         /// <summary>
         /// Gets the description.
         /// </summary>
-        public string Description { protected set; get; }
+        public string Description { set; get; }
 
         /// <summary>
         /// Gets the Mime Type.
         /// </summary>
-        public string MimeType { protected set; get; }
+        public string MimeType { set; get; }
 
         /// <summary>
         /// Gets the size.
         /// </summary>
-        public int Size { protected set; get; }
+        public int Size { set; get; }
 
         /// <summary>
         /// Gets the Uniform Resource Locator.
         /// </summary>
-        public Uri Uri { protected set; get; }
+        [XmlIgnore]
+        public Uri Uri { set; get; }
+
+        [XmlElement("Uri")]
+        public string _Uri
+        {
+            set
+            {
+                this.Uri = new Uri(value);
+            }// End of set
+
+            get
+            {
+                return this.Uri.ToString();
+            }// End of get
+        }// End of _Uri method
 
         /// <summary>
         /// Gets the deref Uniform Resource Locator.
         /// </summary>
-        public Uri DerefUri { protected set; get; }
+        [XmlIgnore]
+        public Uri DerefUri { set; get; }
+
+        [XmlElement("DerefUri")]
+        public string _DerefUri
+        { 
+            set
+            {
+                this.DerefUri = new Uri(value);
+            }// End of set
+
+            get
+            {
+                return this.DerefUri.ToString();
+            }// End of get
+        }// End of _DerefUri property
+
+        /// <summary>
+        /// DerefUriString for serialization. DO NOT USE!
+        /// </summary>
+        public string DerefUriString { get { return this.DerefUri.ToString();  } }
 
         /// <summary>
         /// Gets the digest.
         /// </summary>
-        public string Digest { protected set; get; }
+        public string Digest { set; get; }
 
         /// <summary>
         /// Constructs a default AlertResource object.
