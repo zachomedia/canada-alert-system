@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanadaAlertSystemTesting", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanadaAlertSystem", "CanadaAlertSystem\CanadaAlertSystem.csproj", "{4DEAF4F7-E5A1-4B2B-BC37-38D3AB367340}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanadaAlertSystemGuiTest", "CanadaAlertSystemGuiTest\CanadaAlertSystemGuiTest.csproj", "{4A16E445-7468-43EA-AA01-0E17BF596940}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanadaAlertSystemApi", "CanadaAlertSystemApi\CanadaAlertSystemApi.csproj", "{D959B248-4066-4F78-8855-A158869ECF7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanadaAlertSystemJsonFileCreator", "CanadaAlertSystemJsonFileCreator\CanadaAlertSystemJsonFileCreator.csproj", "{9086F6B0-E585-45BE-BD9E-8BCC097BA052}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{4DEAF4F7-E5A1-4B2B-BC37-38D3AB367340}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DEAF4F7-E5A1-4B2B-BC37-38D3AB367340}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DEAF4F7-E5A1-4B2B-BC37-38D3AB367340}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A16E445-7468-43EA-AA01-0E17BF596940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A16E445-7468-43EA-AA01-0E17BF596940}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A16E445-7468-43EA-AA01-0E17BF596940}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A16E445-7468-43EA-AA01-0E17BF596940}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D959B248-4066-4F78-8855-A158869ECF7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D959B248-4066-4F78-8855-A158869ECF7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D959B248-4066-4F78-8855-A158869ECF7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D959B248-4066-4F78-8855-A158869ECF7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9086F6B0-E585-45BE-BD9E-8BCC097BA052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9086F6B0-E585-45BE-BD9E-8BCC097BA052}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9086F6B0-E585-45BE-BD9E-8BCC097BA052}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9086F6B0-E585-45BE-BD9E-8BCC097BA052}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
