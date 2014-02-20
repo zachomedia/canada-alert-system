@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
@@ -231,8 +232,16 @@ namespace ZacharySeguin.CanadaAlertSystem
         {
             set
             {
-                if (!String.IsNullOrEmpty(value))
-                    this.Web = new Uri(value);
+                try
+                {
+                    if (!String.IsNullOrEmpty(value))
+                        this.Web = new Uri(value);
+                }// End of try
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                    Debug.WriteLine(e.StackTrace);
+                }// End of catch
             }// End of set
 
             get

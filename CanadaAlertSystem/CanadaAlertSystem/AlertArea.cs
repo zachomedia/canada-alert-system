@@ -98,7 +98,7 @@ namespace ZacharySeguin.CanadaAlertSystem
                 foreach (XElement el in elsTemp)
                     area.Polygons.Add(el.Value);
 
-                elsTemp = xElement.Elements(ns + "geocde");
+                elsTemp = xElement.Elements(ns + "geocode");
                 foreach (XElement el in elsTemp)
                 {
                     elTemp = el.Element(el.Name.Namespace + "value");

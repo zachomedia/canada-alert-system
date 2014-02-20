@@ -135,6 +135,12 @@ namespace ZacharySeguin.CanadaAlertSystem
         {
             bool new_alert = true;
 
+            // Ignore system/draft alerts
+            if (alert.Status == AlertStatus.System || alert.Status == AlertStatus.Draft)
+            {
+                return;
+            }// End of if
+
             // Check the list of alerts we have against the references
             // in the new alert.
             // If one of the previous alerts is in the list,
