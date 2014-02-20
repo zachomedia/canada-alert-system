@@ -6,10 +6,20 @@ using System.Threading.Tasks;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
+    /// <summary>
+    /// Alert Event arguments.
+    /// </summary>
     public class AlertEventArgs : EventArgs
     {
-        public Alert Alert { get; set; }
+        /// <summary>
+        /// Gets the alert object.
+        /// </summary>
+        public Alert Alert { get; protected set; }
 
+        /// <summary>
+        /// Constructs a new Alert event args object.
+        /// </summary>
+        /// <param name="alert">The alert object.</param>
         public AlertEventArgs(Alert alert)
         {
             this.Alert = alert;

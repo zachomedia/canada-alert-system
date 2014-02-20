@@ -16,7 +16,7 @@ namespace ZacharySeguin.CanadaAlertSystem
 {
     public delegate void AlertReceived(object sender, AlertEventArgs e);
     public delegate void AlertUpdated(object sender, AlertUpdatedEventArgs e);
-    public delegate void AlertEnded(object sender, AlertEventArgs e);
+    public delegate void AlertExpired(object sender, AlertEventArgs e);
 
     public class AlertSystem
     {
@@ -35,7 +35,7 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// <summary>
         /// An alert has ended (expired/cancelled/etc).
         /// </summary>
-        public EventHandler<AlertEventArgs> AlertEnded;
+        public EventHandler<AlertEventArgs> AlertExpired;
 
         #endregion Events
         #region Properties
@@ -43,17 +43,22 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// <summary>
         /// Gets a list of active alerts.
         /// </summary>
-        public List<Alert> Alerts { get; protected set; }
+        protected List<Alert> Alerts { get; set; }
+
+        /// <summary>
+        /// Background worker for removing expired alerts.
+        /// </summary>
+        protected BackgroundWorker ExpiredAlertsMonitor { get; set; }
 
         /// <summary>
         /// The TcpClient used for streaming.
         /// </summary>
-        public TcpClient StreamingClient { get; set; }
+        protected TcpClient StreamingClient { get; set; }
 
         /// <summary>
         /// Background worker used to monitor a TcpStream.
         /// </summary>
-        private BackgroundWorker StreamingListener { get; set; }
+        protected BackgroundWorker StreamingListener { get; set; }
 
         #endregion Properties
 
@@ -64,13 +69,27 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// </summary>
         public AlertSystem()
         {
-            this.Alerts = new List<Alert>();
-            this.StreamingClient = null;
-            this.StreamingListener = null;
+            this.Init();
         }// End of constructor method
 
         #endregion Constructors
         #region Methods
+
+        /// <summary>
+        /// Initializes the AlertSystem object
+        /// </summary>
+        protected void Init()
+        {
+            this.Alerts = new List<Alert>();
+            this.StreamingClient = null;
+            this.StreamingListener = null;
+
+            this.ExpiredAlertsMonitor = new BackgroundWorker();
+            this.ExpiredAlertsMonitor.WorkerReportsProgress = true;
+            this.ExpiredAlertsMonitor.DoWork += this.ExpiredAlertsMonitor_DoWork;
+            this.ExpiredAlertsMonitor.ProgressChanged += this.ExpiredAlertsMonitor_ProgressChanged;
+            this.ExpiredAlertsMonitor.RunWorkerAsync();
+        }// End of Init method
 
         /// <summary>
         /// Call the event handler informing that an alert was received.
@@ -100,9 +119,9 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// Call the event handler informing that an alert has ended.
         /// </summary>
         /// <param name="args"></param>
-        protected void OnAlertEnded(AlertEventArgs args)
+        protected void OnAlertExpired(AlertEventArgs args)
         {
-            EventHandler<AlertEventArgs> handler = this.AlertEnded;
+            EventHandler<AlertEventArgs> handler = this.AlertExpired;
 
             if (handler != null)
                 handler(this, args);
@@ -114,9 +133,93 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// <param name="alert"></param>
         public void AddAlert(Alert alert)
         {
-            this.Alerts.Add(alert);
-            this.OnAlertReceived(new AlertEventArgs(alert));
+            bool new_alert = true;
+
+            // Check the list of alerts we have against the references
+            // in the new alert.
+            // If one of the previous alerts is in the list,
+            // the alert has been updated and should be replaced by the new one.
+            if (!String.IsNullOrEmpty(alert.References))
+            {
+                string[] references = alert.References.Split(' ');
+
+                foreach (string reference in references)
+                {
+                    // Reference is in 3 components:
+                    //      sender, identifier, timestamp
+                    string[] referenceComponents = reference.Split(',');
+
+                    // Find the identifier in our list of existing alerts
+                    Alert matching = this.Alerts.Find(a => a.Identifier.Equals(referenceComponents[1]));
+
+                    if (matching != null)
+                    {
+                        new_alert = false;
+                        this.OnAlertUpdated(new AlertUpdatedEventArgs(matching, alert));
+
+                        this.Alerts.Remove(matching);
+                        this.Alerts.Add(alert);
+
+                        break;
+                    }// End of if
+                }// End of foreach
+            }// End of if 
+            
+            if (new_alert)
+            {
+                this.Alerts.Add(alert);
+                this.OnAlertReceived(new AlertEventArgs(alert));
+            }// End of if
         }// End of AddAlert method
+
+        /// <summary>
+        /// Removes the alert from this list of alerts.
+        /// </summary>
+        /// <param name="alert">The alert to remove. If the alert is not found, no action is taken.</param>
+        public void RemoveAlert(Alert alert)
+        {
+            this.OnAlertExpired(new AlertEventArgs(alert));
+            this.Alerts.Remove(alert);
+        }// End of RemoveAlert method
+
+        /// <summary>
+        /// Returns an array of active alerts.
+        /// </summary>
+        /// <returns>Array of active alerts.</returns>
+        public Alert[] GetAlerts()
+        {
+            return this.Alerts.ToArray();
+        }// End of GetAlerts method
+
+        /// <summary>
+        /// Performs the monitoring operation to remove expired alerts.
+        /// </summary>
+        protected void ExpiredAlertsMonitor_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                DateTime checkTime = DateTime.Now;
+
+                List<Alert> alerts = this.Alerts.FindAll(
+                    a => a.Information.FindAll(i => i.Expires > checkTime).Count == 0
+                );
+
+                foreach (Alert alert in alerts)
+                {
+                    this.ExpiredAlertsMonitor.ReportProgress(0, alert);
+                }// End of foreach
+
+                System.Threading.Thread.Sleep(30000);
+            }// End of while
+        }// End of ExpiredAlertsMonitor_DoWork method
+
+        /// <summary>
+        /// Called when an alert was identified as expired by the expired alerts monitor.
+        /// </summary>
+        protected void ExpiredAlertsMonitor_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            this.RemoveAlert((Alert)e.UserState);
+        }// End of ExpiredAlertsMonitor_ProgressChanged method
 
         /// <summary>
         /// Loads alerts from an XmlDocument.
@@ -206,6 +309,9 @@ namespace ZacharySeguin.CanadaAlertSystem
             }// End of catch
         }// End of ConnectToStream method
 
+        /// <summary>
+        /// Performs the reading of the Tcp connection.
+        /// </summary>
         private void StreamingListener_DoWork(object sender, DoWorkEventArgs args)
         {
             StreamReader reader = null;
@@ -233,6 +339,7 @@ namespace ZacharySeguin.CanadaAlertSystem
                         catch (Exception e)
                         {
                             Debug.WriteLine(e.Message);
+                            Debug.WriteLine(e.StackTrace);
                         }// End of catch
                         finally
                         {
@@ -249,6 +356,9 @@ namespace ZacharySeguin.CanadaAlertSystem
             Debug.WriteLine("Reading loop complete - Socket Closed");
         }// End of StreamingListener_DoWork method
 
+        /// <summary>
+        /// Receives and processes an alert received from the streaming listener.
+        /// </summary>
         private void StreamingListener_ProgressChanged(object sender, ProgressChangedEventArgs args)
         {
             XDocument xDoc = (XDocument)args.UserState;
