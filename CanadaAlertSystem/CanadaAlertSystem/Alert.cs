@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
 using System.IO;
 
 namespace ZacharySeguin.CanadaAlertSystem
@@ -15,76 +16,148 @@ namespace ZacharySeguin.CanadaAlertSystem
     /// An alert issued by the National Alert Aggregation and Dissemation System.
     /// </summary>
     [Serializable()]
+    [DataContract]
     public class Alert
     {
         /// <summary>
         /// Gets the identifier.
         /// </summary>
+        [DataMember]
         public string Identifier { set; get; }
 
         /// <summary>
         /// Gets the sender.
         /// </summary>
+        [DataMember]
         public string Sender { set; get; }
 
         /// <summary>
         /// Gets the DateTime the alert was sent.
         /// </summary>
+        [DataMember]
         public DateTime Sent { set; get; }
 
         /// <summary>
         /// Gets the AlertStatus.
         /// </summary>
+        [IgnoreDataMember]
         public AlertStatus Status { set; get; }
+
+        /// <summary>
+        /// Gets the AlertStatus as a string (for serialization).
+        /// </summary>
+        [DataMember(Name = "Status")]
+        private string _Status
+        {
+            get
+            {
+                return this.Status.ToString();
+            }// End of get
+            set
+            {
+                AlertStatus status = AlertStatus.Unknown;
+                Enum.TryParse<AlertStatus>(value, out status);
+
+                this.Status = status;
+            }// End of set
+        }// End of _Status property
 
         /// <summary>
         /// Gets the AlertType.
         /// </summary>
+        [IgnoreDataMember]
         public AlertType Type { set; get; }
+
+        /// <summary>
+        /// Gets the AlertType as a string (for serialization).
+        /// </summary>
+        [DataMember(Name = "Type")]
+        private string _Type
+        {
+            get
+            {
+                return this.Type.ToString();
+            }// End of get
+            set
+            {
+                AlertType type = AlertType.Unknown;
+                Enum.TryParse<AlertType>(value, out type);
+
+                this.Type = type;
+            }// End of set
+        }// End of _Type property
 
         /// <summary>
         /// Gets the source.
         /// </summary>
+        [DataMember]
         public string Source { set; get; }
 
         /// <summary>
         /// Gets the AlertScope.
         /// </summary>
+        [IgnoreDataMember]
         public AlertScope Scope { set; get; }
+
+        /// <summary>
+        /// Gets the AlertScope as a string (for serialization).
+        /// </summary>
+        [DataMember(Name = "Scope")]
+        private string _Scope
+        {
+            get
+            {
+                return this.Scope.ToString();
+            }// End of get
+            set
+            {
+                AlertScope scope = AlertScope.Unknown;
+                Enum.TryParse<AlertScope>(value, out scope);
+
+                this.Scope = scope;
+            }// End of set
+        }// End of _Scope property
 
         /// <summary>
         /// Gets the restrictions.
         /// </summary>
+        [DataMember]
         public string Restriction { set; get; }
 
         /// <summary>
         /// Gets the addressess.
         /// </summary>
+        [DataMember]
         public string Addresses { set; get; }
 
         /// <summary>
         /// Gets the codes.
         /// </summary>
+        [DataMember]
         public List<string> Codes { set; get; }
 
         /// <summary>
         /// Gets the note.
         /// </summary>
+        [DataMember]
         public string Note { set; get; }
 
         /// <summary>
         /// Gets the references.
         /// </summary>
+        [DataMember]
         public string References { set; get; }
 
         /// <summary>
         /// Gets the incidents.
         /// </summary>
+        [DataMember]
         public string Incidents { set; get; }
 
         /// <summary>
         /// Gets the Alert Informations.
         /// </summary>
+        [DataMember]
         public List<AlertInfo> Information { set; get; }
 
         /// <summary>

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
@@ -12,39 +13,49 @@ namespace ZacharySeguin.CanadaAlertSystem
     /// NAAD Alert Resource
     /// </summary>
     [Serializable()]
+    [DataContract]
     public class AlertResource
     {
         /// <summary>
         /// Gets the description.
         /// </summary>
+        [DataMember]
         public string Description { set; get; }
 
         /// <summary>
         /// Gets the Mime Type.
         /// </summary>
+        [DataMember]
         public string MimeType { set; get; }
 
         /// <summary>
         /// Gets the size.
         /// </summary>
+        [DataMember]
         public int Size { set; get; }
 
         /// <summary>
         /// Gets the Uniform Resource Locator.
         /// </summary>
         [XmlIgnore]
+        [IgnoreDataMember]
         public Uri Uri { set; get; }
 
         [XmlElement("Uri")]
+        [DataMember(Name = "Uri")]
         public string _Uri
         {
             set
             {
-                this.Uri = new Uri(value);
+                if (!String.IsNullOrEmpty(value))
+                    this.Uri = new Uri(value);
             }// End of set
 
             get
             {
+                if (this.Uri == null)
+                    return String.Empty;
+
                 return this.Uri.ToString();
             }// End of get
         }// End of _Uri method
@@ -53,30 +64,32 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// Gets the deref Uniform Resource Locator.
         /// </summary>
         [XmlIgnore]
+        [IgnoreDataMember]
         public Uri DerefUri { set; get; }
 
         [XmlElement("DerefUri")]
+        [DataMember(Name = "DerefUri")]
         public string _DerefUri
-        { 
+        {
             set
             {
-                this.DerefUri = new Uri(value);
+                if (!String.IsNullOrEmpty(value))
+                    this.DerefUri = new Uri(value);
             }// End of set
 
             get
             {
+                if (this.DerefUri == null)
+                    return String.Empty;
+
                 return this.DerefUri.ToString();
             }// End of get
         }// End of _DerefUri property
 
         /// <summary>
-        /// DerefUriString for serialization. DO NOT USE!
-        /// </summary>
-        public string DerefUriString { get { return this.DerefUri.ToString();  } }
-
-        /// <summary>
         /// Gets the digest.
         /// </summary>
+        [DataMember]
         public string Digest { set; get; }
 
         /// <summary>

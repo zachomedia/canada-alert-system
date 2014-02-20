@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Runtime.Serialization;
 
 namespace ZacharySeguin.CanadaAlertSystem
 {
@@ -11,36 +12,43 @@ namespace ZacharySeguin.CanadaAlertSystem
     /// NAAD Alert Area
     /// </summary>
     [Serializable()]
+    [DataContract]
     public class AlertArea
     {
         /// <summary>
         /// Gets the Description.
         /// </summary>
+        [DataMember]
         public string Description { set; get; }
 
         /// <summary>
         /// Gets the Polygons.
         /// </summary>
+        [DataMember]
         public List<string> Polygons { set; get; }
 
         /// <summary>
         /// Gets the Circles.
         /// </summary>
+        [DataMember]
         public List<string> Circles { set; get; }
 
         /// <summary>
         /// Gets the Geocodes.
         /// </summary>
+        [DataMember]
         public List<string> Geocodes { set; get; }
 
         /// <summary>
         /// Gets the altitude.
         /// </summary>
+        [DataMember]
         public double Altitude { set; get; }
 
         /// <summary>
         /// Gets the ceiling.
         /// </summary>
+        [DataMember]
         public double Ceiling { set; get; }
 
         /// <summary>
