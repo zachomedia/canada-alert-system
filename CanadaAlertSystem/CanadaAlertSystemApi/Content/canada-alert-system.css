@@ -1,0 +1,71 @@
+@import url(http://fonts.googleapis.com/css?family=Istok+Web:400,700,400italic);
+
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Istok Web', sans-serif;
+	font-size: 11pt;
+	line-height: 16pt;
+}
+
+.page-header {
+	left: 0;
+	top: 0;
+
+	margin: 0;
+	padding: 20px;
+	
+	border-bottom: 1px solid black;
+	
+	background: #333;
+	color: white;
+}
+
+	.page-header h1 {
+		margin: 0;
+		padding: 5px;
+	}
+	
+	.page-header .language-selection {
+		float: right;
+		margin-top: -25px;
+	}
+
+.alerts ul {
+	list-style: none;
+	
+	margin: 0;
+	padding: 0;
+}
+
+.alert {
+	list-style: none;
+	
+	margin: 0;
+	padding: 10px 30px;
+}
+
+.alert .areas {
+	color: #888;
+	font-size: 9pt;
+}
+
+	.alert .areas .area-desc:after {
+		content: ', ';
+	}
+
+	.alert .areas .area-desc.last:after {
+		content: '.';
+	}
+
+.alert .description {
+	color: #333
+}
+
+.alert .instruction {
+	font-weight: bold;
+}
+

@@ -8,9 +8,11 @@ using Newtonsoft.Json;
 
 using ZacharySeguin.CanadaAlertSystem;
 using System.Diagnostics;
+using System.Web.Http.Cors;
 
 namespace CanadaAlertSystemApi.Controllers
 {
+    [EnableCors(origins: "*", headers:"*", methods:"*")]
     public class AlertsController : ApiController
     {
         /// <summary>
@@ -30,6 +32,9 @@ namespace CanadaAlertSystemApi.Controllers
         {
             if (!AlertSystemConfigured)
             {
+                foreach (string file in System.IO.Directory.GetFiles(@"C:\TEMP\Alerts\"))
+                    AlertSystem.LoadFromXmlSerializationFile(file);
+
                 AlertSystem.ConnectToStream("streaming1.naad-adna.pelmorex.com", 8080);
                 AlertSystemConfigured = true;
             }// End of if

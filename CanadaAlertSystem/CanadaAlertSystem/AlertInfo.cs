@@ -193,6 +193,7 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// <summary>
         /// Gets the expiry date/time.
         /// </summary>
+        [DataMember]
         public DateTime Expires { set; get; }
 
         /// <summary>

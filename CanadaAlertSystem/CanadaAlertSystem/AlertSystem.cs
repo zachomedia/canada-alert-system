@@ -184,8 +184,8 @@ namespace ZacharySeguin.CanadaAlertSystem
         /// <param name="alert">The alert to remove. If the alert is not found, no action is taken.</param>
         public void RemoveAlert(Alert alert)
         {
-            this.OnAlertExpired(new AlertEventArgs(alert));
-            this.Alerts.Remove(alert);
+            //this.OnAlertExpired(new AlertEventArgs(alert));
+            //this.Alerts.Remove(alert);
         }// End of RemoveAlert method
 
         /// <summary>
