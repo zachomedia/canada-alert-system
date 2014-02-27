@@ -11,6 +11,8 @@ namespace ZacharySeguin.CanadaAlertSystemJsonFileCreator
 {
     public class Program
     {
+        private const bool DEBUG = false;
+
         /// <summary>
         /// Alert System object.
         /// </summary>
@@ -40,6 +42,15 @@ namespace ZacharySeguin.CanadaAlertSystemJsonFileCreator
             }// End of for
         }// End of CreateJsonFile method
 
+        static void PrintStatistics(Alert alert)
+        {
+            if (DEBUG)
+            {
+                Console.WriteLine("\tTotal Information: {0}", alert.Information.Count);
+                Console.WriteLine("\tExpired Information: {0}", alert.Information.FindAll(i => i.Expires <= DateTime.Now).Count);
+            }   
+        }
+
         static void Main(string[] args)
         {
             // Filename
@@ -53,16 +64,31 @@ namespace ZacharySeguin.CanadaAlertSystemJsonFileCreator
 
             AlertSystem.AlertReceived += delegate(object sender, AlertEventArgs e)
             {
+                if (DEBUG)
+                {
+                    Console.WriteLine("[Alert Received] {0}", e.Alert.Identifier);
+                    PrintStatistics(e.Alert);
+                }
                 CreateJsonFile(filename);
             };
 
             AlertSystem.AlertUpdated += delegate(object sender, AlertUpdatedEventArgs e)
             {
+                if (DEBUG)
+                {
+                    Console.WriteLine("[Alert Updated] {0} - {1}", e.OriginalAlert.Identifier, e.UpdatedAlert.Identifier);
+                    PrintStatistics(e.UpdatedAlert);
+                }
                 CreateJsonFile(filename);
             };
 
             AlertSystem.AlertExpired += delegate(object sender, AlertEventArgs e)
             {
+                if (DEBUG)
+                {
+                    Console.WriteLine("[Alert Expired] {0}", e.Alert.Identifier);
+                    PrintStatistics(e.Alert);
+                }
                 CreateJsonFile(filename);
             };
 
@@ -87,6 +113,11 @@ namespace ZacharySeguin.CanadaAlertSystemJsonFileCreator
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }// End of catch
+
+            if (DEBUG)
+            {
+                Console.WriteLine(" --- LOADING OF EXISTING ALERTS COMPLETE --- ");
+            }
 
             // Connect to the NAAD stream
             AlertSystem.ConnectToStream("streaming1.naad-adna.pelmorex.com", 8080);
