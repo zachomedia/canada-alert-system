@@ -161,11 +161,11 @@ namespace ZacharySeguin.CanadaAlertSystem
                     if (matching != null)
                     {
                         new_alert = false;
-                        this.OnAlertUpdated(new AlertUpdatedEventArgs(matching, alert));
 
                         this.Alerts.Remove(matching);
                         this.Alerts.Add(alert);
 
+                        this.OnAlertUpdated(new AlertUpdatedEventArgs(matching, alert));
                         break;
                     }// End of if
                 }// End of foreach
