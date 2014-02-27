@@ -179,13 +179,17 @@ namespace ZacharySeguin.CanadaAlertSystem
         }// End of AddAlert method
 
         /// <summary>
-        /// Removes the alert from this list of alerts.
+        /// Removes the alert from this list of alerts, if all Information components have been removed (expired).
         /// </summary>
         /// <param name="alert">The alert to remove. If the alert is not found, no action is taken.</param>
         public void RemoveAlert(Alert alert)
         {
+            if (alert.Information.Count > 0)
+            {
+                this.Alerts.Remove(alert);
+            }// End of if
+
             this.OnAlertExpired(new AlertEventArgs(alert));
-            this.Alerts.Remove(alert);
         }// End of RemoveAlert method
 
         /// <summary>
@@ -206,13 +210,15 @@ namespace ZacharySeguin.CanadaAlertSystem
             {
                 DateTime checkTime = DateTime.Now;
 
-                List<Alert> alerts = this.Alerts.FindAll(
-                    a => a.Information.FindAll(i => i.Expires > checkTime).Count == 0
-                );
-
-                foreach (Alert alert in alerts)
+                foreach (Alert alert in this.Alerts)
                 {
-                    this.ExpiredAlertsMonitor.ReportProgress(0, alert);
+                    int originalCount = alert.Information.Count;
+                    alert.Information.RemoveAll(i => i.Expires <= checkTime);
+
+                    if (originalCount != alert.Information.Count)
+                    {
+                        this.ExpiredAlertsMonitor.ReportProgress(0, alert);
+                    }// End of if 
                 }// End of foreach
 
                 System.Threading.Thread.Sleep(30000);
